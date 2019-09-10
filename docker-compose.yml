@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  fx_rates:
+    container_name: fx-rates
+    build: .
+    image: finbourne/fx_rates
+    volumes:
+      - .:/usr/src/
