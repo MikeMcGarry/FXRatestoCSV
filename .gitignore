@@ -1,4 +1,5 @@
 *secrets*
 /venv
 .idea
-/files/*
+files/*
+!files/.gitkeep
