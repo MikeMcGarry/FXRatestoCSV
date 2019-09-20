@@ -50,7 +50,8 @@ for pair in currency_pairs_list:
     responses.append(response_keyed)
     dates += list(response_keyed.keys())
 
-unique_dates = set(dates)
+unique_dates = list(set(dates))
+unique_dates.sort()
 
 for response_keyed in responses:
     for date in unique_dates:
