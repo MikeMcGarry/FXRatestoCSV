@@ -16,8 +16,8 @@ currency_pairs = []
 
 base_params = {
     "api_key": api_token,
-    "start_date": "2018-09-10",
-    "end_date": "2019-09-10",
+    "start_date": "2018-09-19",
+    "end_date": "2019-09-18",
     "format": "records",
     "fields": "close"
 }
@@ -27,6 +27,9 @@ fx_rates = {}
 currency_pairs = open(currency_pairs_file, "r")
 currency_pairs_list = currency_pairs.read().splitlines()
 currency_pairs.close()
+
+responses = []
+dates = []
 
 for pair in currency_pairs_list:
     if len(pair) != 6:
@@ -39,13 +42,27 @@ for pair in currency_pairs_list:
     params['currency'] = pair
 
     response = requests.get(base_url+endpoint, params)
+    response_keyed = {}
 
-    for rate in response.json():
-      fx_rates.setdefault(rate['date'], []).append({pair: rate[pair]})
+    for record in response.json():
+        response_keyed[record['date']] = record[pair]
 
+    responses.append(response_keyed)
+    dates += list(response_keyed.keys())
+
+unique_dates = set(dates)
+
+for response_keyed in responses:
+    for date in unique_dates:
+        if date not in response_keyed.keys():
+            value = "MISSING"
+        else:
+            value = response_keyed[date]
+
+        fx_rates.setdefault(date, []).append(value)
 
 now = datetime.now()
-fx_rates_df = pd.DataFrame(fx_rates)
+fx_rates_df = pd.DataFrame(fx_rates, index=currency_pairs_list)
 fx_rates_df.to_csv(f"./files/fx_rates_loaded_on_{now.day}_{now.month}_{now.year}.csv")
 
 
